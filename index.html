@@ -5,8 +5,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Kejutan Ulang Tahun Regi!</title>
+    <!-- Font Keren -->
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
+        /* CSS reset & base */
         * {
             margin: 0;
             padding: 0;
@@ -26,12 +28,13 @@
             background-color: var(--darker);
             color: var(--text-light);
             background-image: radial-gradient(circle at top right, rgba(15, 23, 42, 1), var(--darker));
-            overflow: hidden;
             width: 100vw;
             height: 100vh;
+            overflow: hidden;
             touch-action: none;
         }
 
+        /* Screen Management: Using Safe Block-Level Scrolling */
         .screen {
             position: fixed;
             top: 0;
@@ -39,13 +42,14 @@
             width: 100%;
             height: 100%;
             overflow-y: auto;
+            /* Bisa digeser ke bawah kalau kepanjangan */
             overflow-x: hidden;
-            display: flex;
-            flex-direction: column;
+            display: block;
+            /* Mencegah bug kepotong di atas pas pake flexbox mobile */
             opacity: 0;
             pointer-events: none;
             visibility: hidden;
-            transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: opacity 0.6s ease;
             z-index: 10;
         }
 
@@ -55,37 +59,16 @@
             visibility: visible;
         }
 
-        /* Safe vertical styling for mobile without cutoff */
-        .screen::before,
-        .screen::after {
-            content: '';
-            margin: auto;
-        }
-
         .screen-content {
-            width: 100%;
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 3rem 1rem;
+            padding: 8vh 1rem 3rem 1rem;
+            /* Jarak aman dari atas */
+            min-height: 100%;
         }
 
-        #particles {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 1;
-            pointer-events: none;
-        }
-
-        .particle {
-            position: absolute;
-            background: rgba(255, 255, 255, 0.15);
-            border-radius: 50%;
-        }
-
+        /* Tampilan Awal */
         .welcome-card {
             background: rgba(15, 23, 42, 0.6);
             backdrop-filter: blur(12px);
@@ -97,9 +80,9 @@
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8), 0 0 30px rgba(249, 115, 22, 0.15);
             width: 90%;
             max-width: 600px;
+            margin: auto;
             transform: translateY(30px);
             animation: floatUp 1s forwards ease-out;
-            z-index: 10;
         }
 
         @keyframes floatUp {
@@ -140,10 +123,7 @@
             text-transform: uppercase;
         }
 
-        .btn:active {
-            transform: scale(0.95);
-        }
-
+        /* Screen Game */
         .game-info {
             position: absolute;
             top: 10%;
@@ -196,84 +176,96 @@
             }
         }
 
-        /* Gallery Layout Safely */
+        /* Hasil Misi / Reveal Screen */
         .gallery-container {
             display: flex;
-            gap: 4vw;
-            flex-direction: row;
+            gap: 1rem;
+            /* Gap diperkecil biar nggak mepet di HP */
+            flex-wrap: wrap;
+            /* Kalau layar terlalu kecil, foto turun ke bawah */
             justify-content: center;
+            align-items: center;
             margin-bottom: 2rem;
-            perspective: 1000px;
             width: 100%;
         }
 
         .photo-card {
-            width: 45vw;
+            width: 42vw;
             max-width: 250px;
-            height: auto;
             aspect-ratio: 3/4;
+            /* Menjaga proporsi ukuran foto seperti polaroid */
             background: #1e293b;
             border-radius: 12px;
-            padding: 6px;
+            padding: 8px;
             box-shadow: 0 15px 30px -10px rgba(0, 0, 0, 0.7);
-            transform: rotate(-4deg) translateY(20px) translateZ(-50px);
-            transition: all 0.4s ease-out;
+            transform: rotate(-3deg);
             opacity: 0;
             animation: slideInCards 0.8s forwards;
             border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: transform 0.4s ease;
         }
 
         .photo-card:nth-child(2) {
-            transform: rotate(4deg) translateY(20px) translateZ(-50px);
+            transform: rotate(3deg);
             animation-delay: 0.2s;
         }
 
+        /* Animasi masuk */
+        @keyframes slideInCards {
+            from {
+                opacity: 0;
+                transform: translateY(30px) rotate(0deg);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) rotate(var(--rot));
+            }
+        }
+
+        .photo-card:nth-child(1) {
+            --rot: -3deg;
+        }
+
+        .photo-card:nth-child(2) {
+            --rot: 3deg;
+        }
+
+        /* Interaksi saat ditouch / kursor */
         .photo-card:hover,
         .photo-card:active {
-            transform: rotate(0deg) translateY(-5px) translateZ(30px) scale(1.05) !important;
+            transform: rotate(0deg) scale(1.05) !important;
             z-index: 20;
             border-color: var(--primary);
-            box-shadow: 0 20px 40px -10px rgba(249, 115, 22, 0.4);
         }
 
         .photo-card img {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            border-radius: 8px;
-        }
-
-        @keyframes slideInCards {
-            to {
-                opacity: 1;
-                transform: rotate(var(--target-rotate)) translateY(0) translateZ(0);
-            }
-        }
-
-        .photo-card:nth-child(1) {
-            --target-rotate: -4deg;
-        }
-
-        .photo-card:nth-child(2) {
-            --target-rotate: 4deg;
+            border-radius: 6px;
         }
 
         .message-box {
             background: rgba(30, 41, 59, 0.7);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
-            padding: clamp(1.5rem, 5vw, 2.5rem);
+            padding: clamp(1.2rem, 5vw, 2.5rem);
             border-radius: 20px;
             border-bottom: 4px solid var(--primary);
             width: 95%;
             max-width: 700px;
             text-align: center;
             opacity: 0;
-            transform: translateY(20px);
             animation: fadeInReveal 1s forwards 1s;
         }
 
         @keyframes fadeInReveal {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -281,26 +273,15 @@
         }
 
         .message-box h2 {
-            font-size: clamp(1.8rem, 7vw, 2.8rem);
+            font-size: clamp(1.6rem, 6vw, 2.5rem);
             color: #fbbf24;
             margin-bottom: 0.8rem;
             line-height: 1.2;
         }
 
         .message-box p {
-            font-size: clamp(0.95rem, 3.5vw, 1.2rem);
+            font-size: clamp(0.9rem, 3.5vw, 1.15rem);
             margin-bottom: 0.6rem;
-        }
-
-        .badge {
-            display: inline-block;
-            background: rgba(249, 115, 22, 0.2);
-            color: var(--primary);
-            padding: 0.3rem 1rem;
-            border-radius: 30px;
-            font-weight: 900;
-            font-size: clamp(0.7rem, 2.5vw, 0.85rem);
-            margin-bottom: 1rem;
         }
 
         .highlight {
@@ -308,8 +289,10 @@
             font-weight: 900;
         }
 
+        /* Konfeti dijamin tidak bikin scroll bar panjang */
         .confetti {
-            position: absolute;
+            position: fixed;
+            /* Fixed agar tak memperpanjang halaman scroll */
             pointer-events: none;
             z-index: 100;
         }
@@ -322,20 +305,16 @@
         <source src="song.mp3" type="audio/mpeg">
     </audio>
 
-    <div id="particles"></div>
-
-    <div class="screen active" id="screen0">
-        <div class="screen-content">
-            <div class="welcome-card">
-                <span class="badge">Kejutan Anak Pramuka!</span>
-                <h1>Happy Birthday,<br>Regi! 🎂</h1>
-                <p>Ada kejutan ulang tahun yang spesial nih buat si anak Pramuka yang jago banget main Basket!
-                    Penasaran?</p>
-                <button class="btn" onclick="startGame()">Buka Sekarang</button>
-            </div>
+    <!-- Screen 1: Welcome -->
+    <div class="screen active" id="screen0" style="display: flex; justify-content: center; align-items: center;">
+        <div class="welcome-card">
+            <h1>Happy Birthday<br>Regi! 🎂</h1>
+            <p>Ada kejutan ulang tahun yang spesial nih buat anak Pramuka tangguh penjaga ring Basket! Penasaran?</p>
+            <button class="btn" onclick="startGame()">Buka Sekarang</button>
         </div>
     </div>
 
+    <!-- Screen 2: Mini Game -->
     <div class="screen" id="screen1">
         <div class="game-info">
             Tangkap 5 Bola!<br>
@@ -347,11 +326,12 @@
         </div>
     </div>
 
+    <!-- Screen 3: Final Reveal -->
     <div class="screen" id="screen2">
         <div class="screen-content">
             <div class="gallery-container">
                 <div class="photo-card">
-                    <img src="foto1.jpg" alt="Regi Main Basket"
+                    <img src="foto1.jpg" alt="Regi Basket"
                         onerror="this.src='https://images.unsplash.com/photo-1546519638-68e10949219b?w=500&q=80'">
                 </div>
                 <div class="photo-card">
@@ -365,27 +345,13 @@
                     makin keren prestasinya.</p>
                 <p>Tetap semangat kejar mimpimu. We are always proud of you, <span class="highlight">Regi</span>! 🎂🔥
                 </p>
-                <p style="margin-top: 1rem; font-style: italic; color: #94a3b8; font-size: 0.85rem;">🎧 Happy listening
-                    ya!</p>
+                <p style="margin-top: 1rem; font-style: italic; color: #94a3b8; font-size: 0.85rem;">🎧 (Semoga suka
+                    kejutannya!)</p>
             </div>
         </div>
     </div>
 
     <script>
-        const particlesContainer = document.getElementById('particles');
-        for (let i = 0; i < 40; i++) {
-            const particle = document.createElement('div');
-            particle.classList.add('particle');
-            const size = Math.random() * 6 + 2;
-            particle.style.width = size + 'px';
-            particle.style.height = size + 'px';
-            particle.style.left = Math.random() * 100 + 'vw';
-            particle.style.top = Math.random() * 100 + 'vh';
-            particle.style.animation = `floatUp ${Math.random() * 10 + 10}s linear infinite`;
-            particle.style.opacity = Math.random() * 0.4 + 0.1;
-            particlesContainer.appendChild(particle);
-        }
-
         let score = 0;
 
         function startGame() {
@@ -393,15 +359,18 @@
             music.play().catch(e => console.log(e));
 
             document.getElementById('screen0').classList.remove('active');
-            document.getElementById('screen1').classList.add('active');
-
-            spawnBalls();
+            setTimeout(() => {
+                document.getElementById('screen1').classList.add('active');
+                spawnBalls();
+            }, 300); // Jedah biar transisinya rapi
         }
 
         function spawnBalls() {
             const gameArea = document.getElementById('gameArea');
             for (let i = 0; i < 5; i++) {
-                setTimeout(() => { createBall(gameArea); }, i * 500);
+                setTimeout(() => {
+                    createBall(gameArea);
+                }, i * 400); // Lebih cepat spawn
             }
         }
 
@@ -416,7 +385,9 @@
             ball.style.animation = `spin ${Math.random() * 1.5 + 1}s linear infinite`;
             ballWrapper.appendChild(ball);
 
+            // Responsive ball size
             const size = window.innerWidth < 600 ? 55 : 80;
+
             const x = Math.random() * (window.innerWidth - size);
             const y = Math.random() * (window.innerHeight - size);
 
@@ -426,6 +397,7 @@
             ballWrapper.style.height = size + 'px';
             ballWrapper.style.cursor = 'pointer';
 
+            // Area touch diperbesar 
             const touchArea = document.createElement('div');
             touchArea.style.position = 'absolute';
             touchArea.style.top = '-20px'; touchArea.style.left = '-20px';
@@ -436,40 +408,57 @@
             let dx = (Math.random() > 0.5 ? 1 : -1) * (Math.random() * speedModifier + speedModifier);
             let dy = (Math.random() > 0.5 ? 1 : -1) * (Math.random() * speedModifier + speedModifier);
 
-            let currentX = x; let currentY = y;
+            let currentX = x;
+            let currentY = y;
 
             const moveInterval = setInterval(() => {
-                currentX += dx; currentY += dy;
+                currentX += dx;
+                currentY += dy;
+
                 if (currentX <= 0) { dx = Math.abs(dx); }
                 if (currentX + size >= window.innerWidth) { dx = -Math.abs(dx); }
                 if (currentY <= 0) { dy = Math.abs(dy); }
                 if (currentY + size >= window.innerHeight) { dy = -Math.abs(dy); }
-                ballWrapper.style.left = currentX + 'px'; ballWrapper.style.top = currentY + 'px';
+
+                ballWrapper.style.left = currentX + 'px';
+                ballWrapper.style.top = currentY + 'px';
             }, 20);
 
             const hitHandler = function (e) {
                 e.preventDefault();
-                ballWrapper.onmousedown = null; ballWrapper.ontouchstart = null;
+                ballWrapper.onmousedown = null;
+                ballWrapper.ontouchstart = null;
                 clearInterval(moveInterval);
+
                 ballWrapper.style.transform = 'scale(1.5)';
                 setTimeout(() => {
-                    ballWrapper.style.transform = 'scale(0)'; ballWrapper.style.opacity = '0';
+                    ballWrapper.style.transform = 'scale(0)';
+                    ballWrapper.style.opacity = '0';
                     ballWrapper.style.transition = 'all 0.2s ease';
                 }, 50);
+
                 setTimeout(() => ballWrapper.remove(), 300);
-                score++; document.getElementById('score').innerText = `${score} / 5`;
-                if (score >= 5) { setTimeout(showReveal, 500); }
+
+                score++;
+                document.getElementById('score').innerText = `${score} / 5`;
+
+                if (score >= 5) {
+                    setTimeout(showReveal, 500);
+                }
             };
 
             ballWrapper.onmousedown = hitHandler;
             ballWrapper.ontouchstart = hitHandler;
+
             container.appendChild(ballWrapper);
         }
 
         function showReveal() {
             document.getElementById('screen1').classList.remove('active');
-            document.getElementById('screen2').classList.add('active');
-            fireConfetti();
+            setTimeout(() => {
+                document.getElementById('screen2').classList.add('active');
+                fireConfetti();
+            }, 300);
         }
 
         function fireConfetti() {
@@ -477,7 +466,7 @@
             const center_x = window.innerWidth / 2;
             const center_y = window.innerHeight;
 
-            for (let i = 0; i < 100; i++) {
+            for (let i = 0; i < 70; i++) {
                 const conf = document.createElement('div');
                 conf.classList.add('confetti');
                 conf.style.width = Math.random() * 8 + 4 + 'px';
@@ -487,11 +476,10 @@
                 conf.style.top = center_y + 'px';
                 conf.style.borderRadius = Math.random() > 0.5 ? '8px' : '50%';
 
-                // IMPORTANT: Append to BODY to avoid scrollbar breaking!
-                document.body.appendChild(conf);
+                document.body.appendChild(conf); // Masukin ke body biar fixed
 
                 const angle = (Math.random() * Math.PI) + Math.PI;
-                const velocity = Math.random() * (window.innerWidth < 600 ? 20 : 30) + 10;
+                const velocity = Math.random() * 20 + 10;
                 let vx = Math.cos(angle) * velocity;
                 let vy = Math.sin(angle) * velocity;
                 let rot = Math.random() * 360;
@@ -506,10 +494,16 @@
                     conf.style.top = currentTop + vy + 'px';
                     conf.style.transform = `rotate(${rot}deg)`;
 
-                    vy += 0.8; vx *= 0.98; rot += 10; opacity -= 0.01; conf.style.opacity = opacity;
+                    vy += 0.8;
+                    vx *= 0.98;
+                    rot += 10;
+                    opacity -= 0.01;
+                    conf.style.opacity = opacity;
 
-                    if (opacity <= 0 || currentTop > window.innerHeight + 100) {
-                        clearInterval(anim); conf.remove();
+                    // Hilang kalau udah lewatin layar
+                    if (opacity <= 0 || currentTop > document.documentElement.clientHeight + 50) {
+                        clearInterval(anim);
+                        conf.remove();
                     }
                 }, 20);
             }
