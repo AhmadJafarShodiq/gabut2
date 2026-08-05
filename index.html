@@ -5,10 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Kejutan Ulang Tahun Regi!</title>
-    <!-- Font Keren -->
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        /* CSS reset & base */
         * {
             margin: 0;
             padding: 0;
@@ -29,14 +27,11 @@
             color: var(--text-light);
             background-image: radial-gradient(circle at top right, rgba(15, 23, 42, 1), var(--darker));
             overflow: hidden;
-            /* prevents messy bounce */
             width: 100vw;
             height: 100vh;
             touch-action: none;
-            /* helps prevent pull-to-refresh on mobile games */
         }
 
-        /* Screen Management */
         .screen {
             position: fixed;
             top: 0;
@@ -60,17 +55,21 @@
             visibility: visible;
         }
 
-        .screen-content {
+        /* Safe vertical styling for mobile without cutoff */
+        .screen::before,
+        .screen::after {
+            content: '';
             margin: auto;
-            /* Vertically centers if smaller, pushes normally if bigger */
+        }
+
+        .screen-content {
             width: 100%;
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 2rem 1rem;
+            padding: 3rem 1rem;
         }
 
-        /* Particles container */
         #particles {
             position: fixed;
             top: 0;
@@ -87,7 +86,6 @@
             border-radius: 50%;
         }
 
-        /* Tampilan Awal */
         .welcome-card {
             background: rgba(15, 23, 42, 0.6);
             backdrop-filter: blur(12px);
@@ -146,7 +144,6 @@
             transform: scale(0.95);
         }
 
-        /* Screen Game */
         .game-info {
             position: absolute;
             top: 10%;
@@ -165,7 +162,6 @@
             background: radial-gradient(circle at 30% 30%, #fb923c, #c2410c);
             box-shadow: inset -5px -5px 10px rgba(0, 0, 0, 0.5), 0 10px 15px rgba(0, 0, 0, 0.4);
             cursor: pointer;
-            /* Ukuran default, diatur dinamis di JS biar responsif */
         }
 
         .ball::before,
@@ -200,23 +196,25 @@
             }
         }
 
-        /* Hasil Misi / Reveal Screen */
+        /* Gallery Layout Safely */
         .gallery-container {
             display: flex;
-            gap: 1.5rem;
-            flex-wrap: wrap;
+            gap: 4vw;
+            flex-direction: row;
             justify-content: center;
-            margin-bottom: 1.5rem;
+            margin-bottom: 2rem;
             perspective: 1000px;
             width: 100%;
         }
 
         .photo-card {
-            width: clamp(140px, 40vw, 280px);
-            height: clamp(190px, 55vw, 380px);
+            width: 45vw;
+            max-width: 250px;
+            height: auto;
+            aspect-ratio: 3/4;
             background: #1e293b;
-            border-radius: 16px;
-            padding: 8px;
+            border-radius: 12px;
+            padding: 6px;
             box-shadow: 0 15px 30px -10px rgba(0, 0, 0, 0.7);
             transform: rotate(-4deg) translateY(20px) translateZ(-50px);
             transition: all 0.4s ease-out;
@@ -230,10 +228,9 @@
             animation-delay: 0.2s;
         }
 
-        /* Hover n Touch interactions */
         .photo-card:hover,
         .photo-card:active {
-            transform: rotate(0deg) translateY(-5px) translateZ(30px) scale(1.08) !important;
+            transform: rotate(0deg) translateY(-5px) translateZ(30px) scale(1.05) !important;
             z-index: 20;
             border-color: var(--primary);
             box-shadow: 0 20px 40px -10px rgba(249, 115, 22, 0.4);
@@ -243,7 +240,7 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
-            border-radius: 10px;
+            border-radius: 8px;
         }
 
         @keyframes slideInCards {
@@ -311,7 +308,6 @@
             font-weight: 900;
         }
 
-        /* Konfeti dijamin tidak bikin scroll bar panjang */
         .confetti {
             position: absolute;
             pointer-events: none;
@@ -328,7 +324,6 @@
 
     <div id="particles"></div>
 
-    <!-- Screen 1: Welcome -->
     <div class="screen active" id="screen0">
         <div class="screen-content">
             <div class="welcome-card">
@@ -341,7 +336,6 @@
         </div>
     </div>
 
-    <!-- Screen 2: Mini Game -->
     <div class="screen" id="screen1">
         <div class="game-info">
             Tangkap 5 Bola!<br>
@@ -353,7 +347,6 @@
         </div>
     </div>
 
-    <!-- Screen 3: Final Reveal -->
     <div class="screen" id="screen2">
         <div class="screen-content">
             <div class="gallery-container">
@@ -379,7 +372,6 @@
     </div>
 
     <script>
-        // Background particles
         const particlesContainer = document.getElementById('particles');
         for (let i = 0; i < 40; i++) {
             const particle = document.createElement('div');
@@ -409,9 +401,7 @@
         function spawnBalls() {
             const gameArea = document.getElementById('gameArea');
             for (let i = 0; i < 5; i++) {
-                setTimeout(() => {
-                    createBall(gameArea);
-                }, i * 500);
+                setTimeout(() => { createBall(gameArea); }, i * 500);
             }
         }
 
@@ -426,10 +416,7 @@
             ball.style.animation = `spin ${Math.random() * 1.5 + 1}s linear infinite`;
             ballWrapper.appendChild(ball);
 
-            // Responsive ball size
             const size = window.innerWidth < 600 ? 55 : 80;
-
-            // Random start position avoiding edges
             const x = Math.random() * (window.innerWidth - size);
             const y = Math.random() * (window.innerHeight - size);
 
@@ -439,60 +426,43 @@
             ballWrapper.style.height = size + 'px';
             ballWrapper.style.cursor = 'pointer';
 
-            // Perbesar area hit agar gampang ditouch di mobile
             const touchArea = document.createElement('div');
             touchArea.style.position = 'absolute';
             touchArea.style.top = '-20px'; touchArea.style.left = '-20px';
             touchArea.style.right = '-20px'; touchArea.style.bottom = '-20px';
             ballWrapper.appendChild(touchArea);
 
-            // Base speed for mobile vs desktop
             const speedModifier = window.innerWidth < 600 ? 3 : 5;
             let dx = (Math.random() > 0.5 ? 1 : -1) * (Math.random() * speedModifier + speedModifier);
             let dy = (Math.random() > 0.5 ? 1 : -1) * (Math.random() * speedModifier + speedModifier);
 
-            let currentX = x;
-            let currentY = y;
+            let currentX = x; let currentY = y;
 
             const moveInterval = setInterval(() => {
-                currentX += dx;
-                currentY += dy;
-
+                currentX += dx; currentY += dy;
                 if (currentX <= 0) { dx = Math.abs(dx); }
                 if (currentX + size >= window.innerWidth) { dx = -Math.abs(dx); }
                 if (currentY <= 0) { dy = Math.abs(dy); }
                 if (currentY + size >= window.innerHeight) { dy = -Math.abs(dy); }
-
-                ballWrapper.style.left = currentX + 'px';
-                ballWrapper.style.top = currentY + 'px';
+                ballWrapper.style.left = currentX + 'px'; ballWrapper.style.top = currentY + 'px';
             }, 20);
 
             const hitHandler = function (e) {
                 e.preventDefault();
-                ballWrapper.onmousedown = null;
-                ballWrapper.ontouchstart = null;
+                ballWrapper.onmousedown = null; ballWrapper.ontouchstart = null;
                 clearInterval(moveInterval);
-
                 ballWrapper.style.transform = 'scale(1.5)';
                 setTimeout(() => {
-                    ballWrapper.style.transform = 'scale(0)';
-                    ballWrapper.style.opacity = '0';
+                    ballWrapper.style.transform = 'scale(0)'; ballWrapper.style.opacity = '0';
                     ballWrapper.style.transition = 'all 0.2s ease';
                 }, 50);
-
                 setTimeout(() => ballWrapper.remove(), 300);
-
-                score++;
-                document.getElementById('score').innerText = `${score} / 5`;
-
-                if (score >= 5) {
-                    setTimeout(showReveal, 500);
-                }
+                score++; document.getElementById('score').innerText = `${score} / 5`;
+                if (score >= 5) { setTimeout(showReveal, 500); }
             };
 
             ballWrapper.onmousedown = hitHandler;
             ballWrapper.ontouchstart = hitHandler;
-
             container.appendChild(ballWrapper);
         }
 
@@ -517,7 +487,8 @@
                 conf.style.top = center_y + 'px';
                 conf.style.borderRadius = Math.random() > 0.5 ? '8px' : '50%';
 
-                document.getElementById('screen2').appendChild(conf);
+                // IMPORTANT: Append to BODY to avoid scrollbar breaking!
+                document.body.appendChild(conf);
 
                 const angle = (Math.random() * Math.PI) + Math.PI;
                 const velocity = Math.random() * (window.innerWidth < 600 ? 20 : 30) + 10;
@@ -535,15 +506,10 @@
                     conf.style.top = currentTop + vy + 'px';
                     conf.style.transform = `rotate(${rot}deg)`;
 
-                    vy += 0.8;
-                    vx *= 0.98;
-                    rot += 10;
-                    opacity -= 0.01;
-                    conf.style.opacity = opacity;
+                    vy += 0.8; vx *= 0.98; rot += 10; opacity -= 0.01; conf.style.opacity = opacity;
 
                     if (opacity <= 0 || currentTop > window.innerHeight + 100) {
-                        clearInterval(anim);
-                        conf.remove();
+                        clearInterval(anim); conf.remove();
                     }
                 }, 20);
             }
