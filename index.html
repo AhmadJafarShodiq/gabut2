@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kejutan Ulang Tahun Regi!</title>
+    <!-- Font Keren -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        /* CSS reset & base */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        :root {
+            --primary: #f97316;
+            /* Orange Basket */
+            --secondary: #3b82f6;
+            /* Keren Biru */
+            --dark: #0f172a;
+            --darker: #020617;
+            --text-light: #f8fafc;
+        }
+
+        body {
+            background-color: var(--darker);
+            color: var(--text-light);
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            width: 100vw;
+            background-image: radial-gradient(circle at top right, rgba(15, 23, 42, 1), var(--darker));
+        }
+
+        /* Screen Management */
+        .screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 10;
+        }
+
+        .screen.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        /* Particles container */
+        #particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .particle {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        /* Tampilan Awal */
+        .welcome-card {
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(12px);
+            padding: 3.5rem;
+            border-radius: 24px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8), 0 0 30px rgba(249, 115, 22, 0.15);
+            max-width: 90%;
+            transform: translateY(30px);
+            animation: floatUp 1s forwards ease-out;
+            z-index: 10;
+        }
+
+        @keyframes floatUp {
+            to {
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #fbbf24, var(--primary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 0px 10px 20px rgba(249, 115, 22, 0.2);
+        }
+
+        p {
+            font-size: 1.2rem;
+            color: #cbd5e1;
+            margin-bottom: 2.5rem;
+            line-height: 1.6;
+            max-width: 500px;
+        }
+
+        .btn {
+            background: linear-gradient(to right, var(--primary), #ea580c);
+            color: white;
+            border: none;
+            padding: 1.2rem 3rem;
+            font-size: 1.2rem;
+            font-weight: 700;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 25px -5px rgba(234, 88, 12, 0.5);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover::after {
+            left: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-4px) scale(1.05);
+            box-shadow: 0 20px 30px -5px rgba(234, 88, 12, 0.6);
+        }
+
+        /* Screen Game */
+        .game-info {
+            position: absolute;
+            top: 3rem;
+            font-size: 1.8rem;
+            font-weight: 900;
+            color: #e2e8f0;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            z-index: 20;
+            text-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .ball {
+            position: absolute;
+            width: 70px;
+            height: 70px;
+            background: radial-gradient(circle at 30% 30%, #fb923c, #c2410c);
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: inset -8px -8px 12px rgba(0, 0, 0, 0.5), 0 15px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        .ball::before,
+        .ball::after {
+            content: '';
+            position: absolute;
+            border: 2px solid rgba(0, 0, 0, 0.4);
+            border-radius: 50%;
+        }
+
+        .ball::before {
+            top: -10%;
+            left: 40%;
+            width: 20%;
+            height: 120%;
+        }
+
+        .ball::after {
+            top: 40%;
+            left: -10%;
+            width: 120%;
+            height: 20%;
+        }
+
+        @keyframes spin {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Half Misi / Reveal Screen */
+        .gallery-container {
+            display: flex;
+            gap: 2.5rem;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-bottom: 2rem;
+            perspective: 1000px;
+        }
+
+        .photo-card {
+            width: 280px;
+            height: 380px;
+            background: #1e293b;
+            border-radius: 20px;
+            padding: 12px;
+            box-shadow: 0 25px 40px -10px rgba(0, 0, 0, 0.7);
+            transform: rotate(-6deg) translateY(50px) translateZ(-100px);
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            opacity: 0;
+            animation: slideInCards 0.8s forwards;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .photo-card:nth-child(2) {
+            transform: rotate(6deg) translateY(50px) translateZ(-100px);
+            animation-delay: 0.3s;
+        }
+
+        .photo-card:hover {
+            transform: rotate(0deg) translateY(-10px) translateZ(50px) scale(1.05) !important;
+            z-index: 20;
+            box-shadow: 0 30px 50px -10px rgba(249, 115, 22, 0.3);
+            border-color: var(--primary);
+        }
+
+        .photo-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 12px;
+        }
+
+        @keyframes slideInCards {
+            to {
+                opacity: 1;
+                transform: rotate(var(--target-rotate)) translateY(0) translateZ(0);
+            }
+        }
+
+        .photo-card:nth-child(1) {
+            --target-rotate: -6deg;
+        }
+
+        .photo-card:nth-child(2) {
+            --target-rotate: 6deg;
+        }
+
+        .message-box {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(12px);
+            padding: 2.5rem;
+            border-radius: 20px;
+            border-bottom: 4px solid var(--primary);
+            max-width: 700px;
+            text-align: center;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInReveal 1s forwards 1s;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        @keyframes fadeInReveal {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message-box h2 {
+            font-size: 2.8rem;
+            color: #fbbf24;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 900;
+        }
+
+        .message-box p {
+            font-size: 1.25rem;
+            margin-bottom: 0.8rem;
+            color: #e2e8f0;
+            line-height: 1.6;
+        }
+
+        .badge {
+            display: inline-block;
+            background: rgba(249, 115, 22, 0.2);
+            color: var(--primary);
+            padding: 0.4rem 1.2rem;
+            border-radius: 30px;
+            font-weight: 900;
+            font-size: 0.85rem;
+            margin-bottom: 1.5rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            border: 1px solid rgba(249, 115, 22, 0.4);
+        }
+
+        .highlight {
+            color: var(--primary);
+            font-weight: 900;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Audio Player -->
+    <audio id="bgMusic" loop>
+        <!-- Pastikan lagunya sudah dinamakan song.mp3 di folder yang sama ! -->
+        <source src="song.mp3" type="audio/mpeg">
+    </audio>
+
+    <div id="particles"></div>
+
+    <!-- Screen 1: Welcome -->
+    <div class="screen active" id="screen0">
+        <div class="welcome-card">
+            <span class="badge">Kejutan Anak Pramuka!</span>
+            <h1>Happy Birthday, Regi! 🎂</h1>
+            <p>Ada kejutan ulang tahun yang spesial nih buat si anak Pramuka yang jago banget main Basket! Penasaran?
+            </p>
+            <button class="btn" onclick="startGame()">Buka Sekarang</button>
+        </div>
+    </div>
+
+    <!-- Screen 2: Mini Game -->
+    <div class="screen" id="screen1">
+        <div class="game-info">
+            Tangkap 5 Bola Basketnya Cepat! <br>
+            <span id="score" style="color: var(--primary); font-size: 2.5rem; display: block; margin-top: 10px;">0 /
+                5</span>
+        </div>
+        <div id="gameArea" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow: hidden;">
+        </div>
+    </div>
+
+    <!-- Screen 3: Final Reveal -->
+    <div class="screen" id="screen2">
+        <div class="gallery-container">
+            <div class="photo-card">
+                <img src="foto1.jpg" alt="Regi Main Basket"
+                    onerror="this.src='https://images.unsplash.com/photo-1546519638-68e10949219b?w=500&q=80'">
+            </div>
+            <div class="photo-card">
+                <img src="foto2.jpg" alt="Regi Juara"
+                    onerror="this.src='https://images.unsplash.com/photo-1519861531473-9200262188bf?w=500&q=80'">
+            </div>
+        </div>
+        <div class="message-box">
+            <h2>Selamat Ulang Tahun Bro! 🎉</h2>
+            <p>Selamat bertambah umur! Semoga panjang umur, sehat selalu, makin jago skill basketnya, dan di Pramuka
+                makin keren prestasinya.</p>
+            <p>Tetap semangat kejar mimpimu. We are always proud of you, <span class="highlight">Regi</span>! 🎂🔥</p>
+            <p style="margin-top: 1.5rem; font-style: italic; color: #94a3b8; font-size: 1rem;">🎧 Happy listening ya!
+            </p>
+        </div>
+    </div>
+
+    <script>
+        // Background particles
+        const particlesContainer = document.getElementById('particles');
+        for (let i = 0; i < 60; i++) {
+            const particle = document.createElement('div');
+            particle.classList.add('particle');
+            const size = Math.random() * 8 + 2;
+            particle.style.width = size + 'px';
+            particle.style.height = size + 'px';
+            particle.style.left = Math.random() * 100 + 'vw';
+            particle.style.top = Math.random() * 100 + 'vh';
+            particle.style.animation = `floatUp ${Math.random() * 15 + 10}s linear infinite`;
+            particle.style.opacity = Math.random() * 0.5 + 0.1;
+            particlesContainer.appendChild(particle);
+        }
+
+        // State variables
+        let score = 0;
+
+        function startGame() {
+            // Play Audio
+            const music = document.getElementById('bgMusic');
+            music.play().catch(e => console.log(e));
+
+            document.getElementById('screen0').classList.remove('active');
+            document.getElementById('screen1').classList.add('active');
+
+            // Spawn balls
+            spawnBalls();
+        }
+
+        function spawnBalls() {
+            const gameArea = document.getElementById('gameArea');
+            for (let i = 0; i < 5; i++) {
+                setTimeout(() => {
+                    createBall(gameArea);
+                }, i * 600);
+            }
+        }
+
+        function createBall(container) {
+            const ballWrapper = document.createElement('div');
+            ballWrapper.style.position = 'absolute';
+
+            const ball = document.createElement('div');
+            ball.classList.add('ball');
+            ball.style.animation = `spin ${Math.random() * 2 + 1}s linear infinite`;
+
+            ballWrapper.appendChild(ball);
+
+            const size = 70;
+            const x = Math.random() * (window.innerWidth - size * 2) + size;
+            const y = Math.random() * (window.innerHeight - size * 2) + size;
+
+            ballWrapper.style.left = x + 'px';
+            ballWrapper.style.top = y + 'px';
+
+            let dx = (Math.random() > 0.5 ? 1 : -1) * (Math.random() * 6 + 4);
+            let dy = (Math.random() > 0.5 ? 1 : -1) * (Math.random() * 6 + 4);
+            let currentX = x;
+            let currentY = y;
+
+            const moveInterval = setInterval(() => {
+                currentX += dx;
+                currentY += dy;
+
+                if (currentX <= 0 || currentX >= window.innerWidth - size) {
+                    dx = -dx;
+                }
+                if (currentY <= 0 || currentY >= window.innerHeight - size) {
+                    dy = -dy;
+                }
+
+                ballWrapper.style.left = currentX + 'px';
+                ballWrapper.style.top = currentY + 'px';
+            }, 20);
+
+            ballWrapper.style.width = '70px';
+            ballWrapper.style.height = '70px';
+            ballWrapper.style.cursor = 'pointer';
+
+            ballWrapper.onmousedown = ballWrapper.ontouchstart = function (e) {
+                e.preventDefault();
+                clearInterval(moveInterval);
+                ballWrapper.style.transform = 'scale(1.5)';
+                setTimeout(() => {
+                    ballWrapper.style.transform = 'scale(0)';
+                    ballWrapper.style.opacity = '0';
+                    ballWrapper.style.transition = 'all 0.3s ease';
+                }, 50);
+
+                setTimeout(() => ballWrapper.remove(), 400);
+
+                score++;
+                document.getElementById('score').innerText = `${score} / 5`;
+
+                document.body.style.transform = 'translate(' + (Math.random() * 10 - 5) + 'px, ' + (Math.random() * 10 - 5) + 'px)';
+                setTimeout(() => { document.body.style.transform = 'none'; }, 50);
+
+                if (score >= 5) {
+                    setTimeout(showReveal, 600);
+                }
+            }
+
+            container.appendChild(ballWrapper);
+        }
+
+        function showReveal() {
+            document.getElementById('screen1').classList.remove('active');
+            document.getElementById('screen2').classList.add('active');
+            fireConfetti();
+        }
+
+        function fireConfetti() {
+            const colors = ['#f97316', '#3b82f6', '#fbbf24', '#ffffff', '#cbd5e1'];
+            const center_x = window.innerWidth / 2;
+            const center_y = window.innerHeight;
+
+            for (let i = 0; i < 200; i++) {
+                const conf = document.createElement('div');
+                conf.style.position = 'absolute';
+                conf.style.width = Math.random() * 8 + 4 + 'px';
+                conf.style.height = Math.random() * 15 + 5 + 'px';
+                conf.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                conf.style.left = center_x + 'px';
+                conf.style.top = center_y + 'px';
+                conf.style.borderRadius = Math.random() > 0.3 ? '8px' : '50%';
+                conf.style.zIndex = '100';
+                conf.style.pointerEvents = 'none';
+                document.body.appendChild(conf);
+
+                const angle = (Math.random() * Math.PI) + Math.PI;
+                const velocity = Math.random() * 30 + 10;
+                let vx = Math.cos(angle) * velocity;
+                let vy = Math.sin(angle) * velocity;
+                let rot = Math.random() * 360;
+                let rotV = (Math.random() - 0.5) * 20;
+
+                let opacity = 1;
+
+                const anim = setInterval(() => {
+                    const currentLeft = parseFloat(conf.style.left);
+                    const currentTop = parseFloat(conf.style.top);
+
+                    conf.style.left = currentLeft + vx + 'px';
+                    conf.style.top = currentTop + vy + 'px';
+                    conf.style.transform = `rotate(${rot}deg)`;
+
+                    vy += 0.8;
+                    vx *= 0.98;
+                    rot += rotV;
+
+                    opacity -= 0.005;
+                    conf.style.opacity = opacity;
+
+                    if (opacity <= 0 || currentTop > window.innerHeight + 50) {
+                        clearInterval(anim);
+                        conf.remove();
+                    }
+                }, 20);
+            }
+        }
+    </script>
+</body>
+
+</html>
